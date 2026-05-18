@@ -1,0 +1,27 @@
+# Build outputs
+**/target/
+
+# Maven
+*.class
+pom.xml.tag
+pom.xml.releaseBackup
+
+# IntelliJ / Eclipse
+.idea/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
+
+# VS Code
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+

@@ -1,36 +1,26 @@
-# HOTEL MARAU
+# Hotel Marau — Backend
 
-Sistema de hospedagem desenvolvido para gerenciar residências, quartos, clientes e reservas na região de Maraú - BA.
-
-## Descrição
-
-O projeto tem como objetivo organizar o processo de aluguel de quartos em residências locais, permitindo controle de disponibilidade, cálculo de diárias e registro de hospedagens.
-
-## Funcionalidades
-
-- Cadastro de residências e quartos
-- Cadastro de clientes
-- Criação de reservas
-- Cálculo automático de diárias
-- Controle de disponibilidade
-- Registro de pagamentos
-
-## Tecnologias
-
-- Java
-- Spring Boot
-- MySQL
-- API REST
+Este repositório contém o backend Spring Boot do **Hotel Marau**.
 
 ## Estrutura
+- `hotel-marau/` → projeto Maven/Spring Boot (código, controllers/services/repositories, etc.)
+- `index.html` → arquivo estático (se estiver sendo usado na entrega)
+- `PM_TRABALHOPRATICO-1.pdf`, `SPRINT2_TPPM.pdf` → documentação da disciplina/sprints
 
-O sistema segue arquitetura em camadas:
+## Rodar localmente
+1. Entre no diretório do backend:
+   ```bash
+   cd hotel-marau
+   ```
+2. Ajuste as credenciais no arquivo:
+   - `src/main/resources/application.properties`
+3. Rode a aplicação:
+   ```bash
+   mvn spring-boot:run
+   ```
 
-- Controller
-- Service
-- Repository
-- Model
+A API sobe em: `http://localhost:8080`.
 
-## Status
+## Notas sobre organização
+- A pasta `hotel-marau/target/` é gerada automaticamente pelo Maven e está ignorada via `.gitignore`.
 
-Projeto em desenvolvimento.
