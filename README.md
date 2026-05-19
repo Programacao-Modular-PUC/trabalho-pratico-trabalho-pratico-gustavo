@@ -1,4 +1,4 @@
-# 🏨 Hotel Maraú — Backend API
+# 🏨 Hotel Maraú 
 
 Sistema de gerenciamento de hospedagens para o Hotel Maraú (Maraú - BA).
 
