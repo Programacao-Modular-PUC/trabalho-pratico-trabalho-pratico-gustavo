@@ -1,6 +1,7 @@
 package com.hotelmarau.controller;
 
 import com.hotelmarau.dto.QuartoDTO;
+import com.hotelmarau.exception.DataInvalidaException;
 import com.hotelmarau.model.Quarto;
 import com.hotelmarau.service.QuartoService;
 import jakarta.validation.Valid;
@@ -69,5 +70,50 @@ public class QuartoController {
     public ResponseEntity<Void> desativar(@PathVariable Long id) {
         quartoService.desativar(id);
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Filtra quartos de uma residência por tipo
+     * @param residenciaId ID da residência
+     * @param tipo Tipo do quarto: INDIVIDUAL, DUPLO ou FAMILIA
+     */
+    @GetMapping("/residencia/{residenciaId}/tipo/{tipo}")
+    public ResponseEntity<?> filtrarPorTipo(@PathVariable Long residenciaId, @PathVariable String tipo) {
+        try {
+            List<Quarto> quartos = quartoService.filtrarPorTipo(residenciaId, tipo);
+            return ResponseEntity.ok(quartos);
+        } catch (DataInvalidaException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Filtra quartos ativos de uma residência por tipo
+     */
+    @GetMapping("/residencia/{residenciaId}/tipo/{tipo}/ativos")
+    public ResponseEntity<?> filtrarPorTipoAtivos(@PathVariable Long residenciaId, @PathVariable String tipo) {
+        try {
+            List<Quarto> quartos = quartoService.filtrarPorTipoAtivos(residenciaId, tipo);
+            return ResponseEntity.ok(quartos);
+        } catch (DataInvalidaException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Filtra quartos disponíveis de uma residência por tipo e período
+     */
+    @GetMapping("/residencia/{residenciaId}/tipo/{tipo}/disponiveis")
+    public ResponseEntity<?> filtrarPorTipoDisponiveis(
+            @PathVariable Long residenciaId,
+            @PathVariable String tipo,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dataEntrada,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dataSaida) {
+        try {
+            List<Quarto> quartos = quartoService.filtrarPorTipoDisponiveis(residenciaId, tipo, dataEntrada, dataSaida);
+            return ResponseEntity.ok(quartos);
+        } catch (DataInvalidaException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro: " + e.getMessage());
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.hotelmarau.controller;
 
 import com.hotelmarau.dto.AluguelDTO;
+import com.hotelmarau.exception.*;
 import com.hotelmarau.model.Aluguel;
 import com.hotelmarau.service.AluguelService;
 import jakarta.validation.Valid;
@@ -35,8 +36,20 @@ public class AluguelController {
     }
 
     @PostMapping
-    public ResponseEntity<Aluguel> criar(@Valid @RequestBody AluguelDTO dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(aluguelService.criar(dto));
+    public ResponseEntity<?> criar(@Valid @RequestBody AluguelDTO dto) {
+        try {
+            return ResponseEntity.status(HttpStatus.CREATED).body(aluguelService.criar(dto));
+        } catch (DataInvalidaException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro de data: " + e.getMessage());
+        } catch (QuartoIndisponivelException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Quarto indisponível: " + e.getMessage());
+        } catch (CapacidadeExcedidaException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Capacidade excedida: " + e.getMessage());
+        } catch (RecursoNaoPermitidoException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Recurso não permitido: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao criar aluguel: " + e.getMessage());
+        }
     }
 
     @PatchMapping("/{id}/cancelar")

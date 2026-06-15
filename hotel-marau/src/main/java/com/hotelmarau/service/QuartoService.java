@@ -1,6 +1,7 @@
 package com.hotelmarau.service;
 
 import com.hotelmarau.dto.QuartoDTO;
+import com.hotelmarau.exception.DataInvalidaException;
 import com.hotelmarau.model.*;
 import com.hotelmarau.repository.QuartoRepository;
 import com.hotelmarau.repository.ResidenciaRepository;
@@ -80,6 +81,88 @@ public class QuartoService {
         Quarto q = buscarPorId(id);
         q.desativar();
         quartoRepository.save(q);
+    }
+
+    /**
+     * Filtra quartos de uma residência por tipo
+     * @param residenciaId ID da residência
+     * @param tipo Tipo do quarto: INDIVIDUAL, DUPLO ou FAMILIA
+     * @return Lista de quartos do tipo especificado
+     */
+    public List<Quarto> filtrarPorTipo(Long residenciaId, String tipo) throws DataInvalidaException {
+        try {
+            if (tipo == null || tipo.isBlank()) {
+                throw new DataInvalidaException("Tipo de quarto não pode ser nulo ou vazio.");
+            }
+
+            String tipoUpper = tipo.toUpperCase();
+            List<Quarto> quartos = quartoRepository.findByResidenciaId(residenciaId);
+
+            return quartos.stream()
+                    .filter(q -> {
+                        String tipoQuarto = q.getTipoQuarto();
+                        if (tipoQuarto == null) {
+                            tipoQuarto = determinarTipo(q);
+                        }
+                        return tipoQuarto.equals(tipoUpper);
+                    })
+                    .toList();
+        } catch (NullPointerException e) {
+            throw new DataInvalidaException("Erro ao filtrar quartos por tipo.", e);
+        }
+    }
+
+    /**
+     * Filtra quartos ativos de uma residência por tipo
+     */
+    public List<Quarto> filtrarPorTipoAtivos(Long residenciaId, String tipo) throws DataInvalidaException {
+        List<Quarto> quartos = filtrarPorTipo(residenciaId, tipo);
+        return quartos.stream()
+                .filter(Quarto::isAtivo)
+                .toList();
+    }
+
+    /**
+     * Filtra quartos disponíveis de uma residência por tipo
+     */
+    public List<Quarto> filtrarPorTipoDisponiveis(Long residenciaId, String tipo, 
+                                                    LocalDateTime dataInicio, LocalDateTime dataFim) 
+            throws DataInvalidaException {
+        if (dataInicio == null || dataFim == null) {
+            throw new DataInvalidaException("Datas de início e fim não podem ser nulas.");
+        }
+        if (dataInicio.isAfter(dataFim)) {
+            throw new DataInvalidaException("Data de início não pode ser após a data de fim.");
+        }
+
+        List<Quarto> quartos = filtrarPorTipoAtivos(residenciaId, tipo);
+        return quartos.stream()
+                .filter(q -> q.verificarDisponibilidade(dataInicio, dataFim))
+                .toList();
+    }
+
+    /**
+     * Determina o tipo de um quarto com base em sua classe
+     */
+    private String determinarTipo(Quarto quarto) {
+        if (quarto instanceof QuartoIndividual) {
+            return "INDIVIDUAL";
+        } else if (quarto instanceof QuartoDuplo) {
+            return "DUPLO";
+        } else if (quarto instanceof QuartoFamilia) {
+            return "FAMILIA";
+        }
+        return "DESCONHECIDO";
+    }
+
+    /**
+     * Lista todos os quartos de uma residência por tipo
+     */
+    public List<Quarto> listarQuartosPorTipo(Long residenciaId) {
+        List<Quarto> quartos = quartoRepository.findByResidenciaId(residenciaId);
+        return quartos.stream()
+                .filter(Quarto::isAtivo)
+                .toList();
     }
 
     private Quarto construirQuarto(QuartoDTO dto) {

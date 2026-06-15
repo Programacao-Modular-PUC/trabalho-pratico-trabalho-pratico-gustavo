@@ -57,4 +57,44 @@ public class ClienteController {
         clienteService.deletar(id);
         return ResponseEntity.noContent().build();
     }
+
+    /**
+     * Obtém o histórico completo de hospedagem de um cliente
+     */
+    @GetMapping("/{id}/historico")
+    public ResponseEntity<List<Aluguel>> obterHistorico(@PathVariable Long id) {
+        return ResponseEntity.ok(clienteService.obterHistoricoCliente(id));
+    }
+
+    /**
+     * Obtém apenas os aluguéis ativos de um cliente
+     */
+    @GetMapping("/{id}/alugueis/ativos")
+    public ResponseEntity<List<Aluguel>> obterAlugueisAtivos(@PathVariable Long id) {
+        return ResponseEntity.ok(clienteService.obterAlugueisAtivos(id));
+    }
+
+    /**
+     * Obtém apenas os aluguéis concluídos de um cliente
+     */
+    @GetMapping("/{id}/alugueis/concluidos")
+    public ResponseEntity<List<Aluguel>> obterAluguelsConcluidos(@PathVariable Long id) {
+        return ResponseEntity.ok(clienteService.obterAluguelsConcluidos(id));
+    }
+
+    /**
+     * Obtém apenas os aluguéis cancelados de um cliente
+     */
+    @GetMapping("/{id}/alugueis/cancelados")
+    public ResponseEntity<List<Aluguel>> obterAluguelsCancelados(@PathVariable Long id) {
+        return ResponseEntity.ok(clienteService.obterAluguelsCancelados(id));
+    }
+
+    /**
+     * Gera um relatório formatado do histórico do cliente
+     */
+    @GetMapping("/{id}/historico/relatorio")
+    public ResponseEntity<String> gerarRelatoriHistorico(@PathVariable Long id) {
+        return ResponseEntity.ok(clienteService.gerarRelatoriHistorico(id));
+    }
 }

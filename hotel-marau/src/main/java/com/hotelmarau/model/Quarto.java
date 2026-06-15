@@ -33,7 +33,8 @@ public abstract class Quarto {
     private Residencia residencia;
 
     @OneToMany(mappedBy = "quarto", fetch = FetchType.LAZY)
-    private List<Aluguel> alugueis;
+    private List<Aluguel> alugueis = new java.util.ArrayList<>();
+
 
     // Adicional fixo de ar condicionado: R$30,00/diária
     protected static final double ADICIONAL_AR = 30.0;

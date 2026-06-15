@@ -43,6 +43,26 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
 
+    @ExceptionHandler(com.hotelmarau.exception.QuartoIndisponivelException.class)
+    public ResponseEntity<Map<String, Object>> handleQuartoIndisponivel(com.hotelmarau.exception.QuartoIndisponivelException ex) {
+        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(com.hotelmarau.exception.CapacidadeExcedidaException.class)
+    public ResponseEntity<Map<String, Object>> handleCapacidadeExcedida(com.hotelmarau.exception.CapacidadeExcedidaException ex) {
+        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(com.hotelmarau.exception.DataInvalidaException.class)
+    public ResponseEntity<Map<String, Object>> handleDataInvalida(com.hotelmarau.exception.DataInvalidaException ex) {
+        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(com.hotelmarau.exception.RecursoNaoPermitidoException.class)
+    public ResponseEntity<Map<String, Object>> handleRecursoNaoPermitido(com.hotelmarau.exception.RecursoNaoPermitidoException ex) {
+        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
     private ResponseEntity<Map<String, Object>> buildResponse(HttpStatus status, String message) {
         Map<String, Object> body = new HashMap<>();
         body.put("timestamp", LocalDateTime.now().toString());
@@ -50,4 +70,5 @@ public class GlobalExceptionHandler {
         body.put("erro", message);
         return ResponseEntity.status(status).body(body);
     }
+
 }
