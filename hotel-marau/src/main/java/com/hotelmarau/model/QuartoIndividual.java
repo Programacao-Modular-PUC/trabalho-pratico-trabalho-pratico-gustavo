@@ -1,6 +1,10 @@
 package com.hotelmarau.model;
 
-import jakarta.persistence.*;
+import com.hotelmarau.exception.RecursoNaoPermitidoException;
+
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -58,6 +62,15 @@ public class QuartoIndividual extends Quarto {
      */
     public int getLimiteHospedes() {
         return numeroCamas;
+    }
+
+    /**
+     * Regra de domínio: quarto individual não permite berço.
+     */
+    public void validarBercoNaoPermitido(boolean bercoSolicitado) throws RecursoNaoPermitidoException {
+        if (bercoSolicitado) {
+            throw new RecursoNaoPermitidoException("Berço não é permitido para Quarto Individual.");
+        }
     }
 
     // Getter/Setter explícitos

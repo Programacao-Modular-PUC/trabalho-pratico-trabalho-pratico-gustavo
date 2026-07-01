@@ -1,18 +1,29 @@
 package com.hotelmarau.controller;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.hotelmarau.dto.QuartoDTO;
 import com.hotelmarau.exception.DataInvalidaException;
 import com.hotelmarau.model.Quarto;
 import com.hotelmarau.service.QuartoService;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @RestController
 @RequestMapping("/quartos")
@@ -78,26 +89,18 @@ public class QuartoController {
      * @param tipo Tipo do quarto: INDIVIDUAL, DUPLO ou FAMILIA
      */
     @GetMapping("/residencia/{residenciaId}/tipo/{tipo}")
-    public ResponseEntity<?> filtrarPorTipo(@PathVariable Long residenciaId, @PathVariable String tipo) {
-        try {
-            List<Quarto> quartos = quartoService.filtrarPorTipo(residenciaId, tipo);
-            return ResponseEntity.ok(quartos);
-        } catch (DataInvalidaException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro: " + e.getMessage());
-        }
+    public ResponseEntity<List<Quarto>> filtrarPorTipo(@PathVariable Long residenciaId, @PathVariable String tipo)
+            throws DataInvalidaException {
+        return ResponseEntity.ok(quartoService.filtrarPorTipo(residenciaId, tipo));
     }
 
     /**
      * Filtra quartos ativos de uma residência por tipo
      */
     @GetMapping("/residencia/{residenciaId}/tipo/{tipo}/ativos")
-    public ResponseEntity<?> filtrarPorTipoAtivos(@PathVariable Long residenciaId, @PathVariable String tipo) {
-        try {
-            List<Quarto> quartos = quartoService.filtrarPorTipoAtivos(residenciaId, tipo);
-            return ResponseEntity.ok(quartos);
-        } catch (DataInvalidaException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro: " + e.getMessage());
-        }
+    public ResponseEntity<List<Quarto>> filtrarPorTipoAtivos(@PathVariable Long residenciaId, @PathVariable String tipo)
+            throws DataInvalidaException {
+        return ResponseEntity.ok(quartoService.filtrarPorTipoAtivos(residenciaId, tipo));
     }
 
     /**
@@ -108,12 +111,8 @@ public class QuartoController {
             @PathVariable Long residenciaId,
             @PathVariable String tipo,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dataEntrada,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dataSaida) {
-        try {
-            List<Quarto> quartos = quartoService.filtrarPorTipoDisponiveis(residenciaId, tipo, dataEntrada, dataSaida);
-            return ResponseEntity.ok(quartos);
-        } catch (DataInvalidaException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro: " + e.getMessage());
-        }
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dataSaida)
+            throws DataInvalidaException {
+        return ResponseEntity.ok(quartoService.filtrarPorTipoDisponiveis(residenciaId, tipo, dataEntrada, dataSaida));
     }
 }

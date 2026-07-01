@@ -1,18 +1,29 @@
 package com.hotelmarau.service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.hotelmarau.dto.AluguelDTO;
-import com.hotelmarau.exception.*;
-import com.hotelmarau.model.*;
+import com.hotelmarau.exception.CapacidadeExcedidaException;
+import com.hotelmarau.exception.DataInvalidaException;
+import com.hotelmarau.exception.QuartoIndisponivelException;
+import com.hotelmarau.exception.RecursoNaoPermitidoException;
+import com.hotelmarau.model.Aluguel;
+import com.hotelmarau.model.Cliente;
+import com.hotelmarau.model.Quarto;
+import com.hotelmarau.model.QuartoDuplo;
+import com.hotelmarau.model.QuartoFamilia;
+import com.hotelmarau.model.QuartoIndividual;
+import com.hotelmarau.model.Residencia;
 import com.hotelmarau.repository.AluguelRepository;
 import com.hotelmarau.repository.ClienteRepository;
 import com.hotelmarau.repository.QuartoRepository;
 import com.hotelmarau.repository.ResidenciaRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -84,6 +95,9 @@ public class AluguelService {
 
             // Validação de capacidade de hóspedes
             int capacidade = obterCapacidadeQuarto(quarto);
+            if (dto.getNumeroHospedes() <= 0) {
+                throw new DataInvalidaException("Número de hóspedes deve ser maior que zero.");
+            }
             if (dto.getNumeroHospedes() > capacidade) {
                 throw new CapacidadeExcedidaException(
                     String.format("O número de hóspedes (%d) excede a capacidade do quarto (%d).",
@@ -92,6 +106,9 @@ public class AluguelService {
 
             // Validação de berço: só QuartoDuplo e se o quarto tiver berço disponível
             if (dto.isBercoSolicitado()) {
+                if (quarto instanceof QuartoIndividual individual) {
+                    individual.validarBercoNaoPermitido(true);
+                }
                 if (!(quarto instanceof QuartoDuplo duplo)) {
                     throw new RecursoNaoPermitidoException("Berço só pode ser solicitado para Quartos Duplos.");
                 }
@@ -177,8 +194,8 @@ public class AluguelService {
      */
     private int obterCapacidadeQuarto(Quarto quarto) {
         if (quarto instanceof QuartoIndividual qi) {
-            return 1;
-        } else if (quarto instanceof QuartoDuplo qd) {
+            return qi.getLimiteHospedes();
+        } else if (quarto instanceof QuartoDuplo) {
             return 2;
         } else if (quarto instanceof QuartoFamilia qf) {
             return qf.calcularCapacidadeMaxima();

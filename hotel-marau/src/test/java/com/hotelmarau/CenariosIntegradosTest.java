@@ -1,12 +1,22 @@
 package com.hotelmarau;
 
-import com.hotelmarau.model.*;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import com.hotelmarau.model.Aluguel;
+import com.hotelmarau.model.Cliente;
+import com.hotelmarau.model.QuartoDuplo;
+import com.hotelmarau.model.QuartoFamilia;
+import com.hotelmarau.model.QuartoIndividual;
+import com.hotelmarau.model.Residencia;
 
 /**
  * Testes integrados de cenários complexos.
@@ -177,9 +187,35 @@ public class CenariosIntegradosTest {
         
         assertNotNull(recibo);
         assertTrue(recibo.contains("RECIBO"));
-        assertTrue(recibo.contains("entrada"));
-        assertTrue(recibo.contains("saída"));
+        assertTrue(recibo.contains("Data e horário de entrada"));
+        assertTrue(recibo.contains("Data e horário de saída"));
+        assertTrue(recibo.contains("Número de diárias"));
+        assertTrue(recibo.contains("Total a pagar"));
         assertTrue(recibo.contains("R$"));
         assertTrue(recibo.length() > 0);
+    }
+
+    @Test
+    public void testRegraMeioDiaSaidaApos12ContaDiariaExtra() {
+        Aluguel aluguel = new Aluguel();
+        aluguel.setQuarto(new QuartoIndividual(100.0, false, false, 1));
+        aluguel.setDataEntrada(LocalDateTime.of(2026, 1, 10, 13, 0));
+        aluguel.setDataSaida(LocalDateTime.of(2026, 1, 11, 13, 1));
+        aluguel.setNumeroHospedes(1);
+
+        assertEquals(2, aluguel.calcularDiarias(),
+                "Saída após 12:00 deve adicionar uma nova diária");
+    }
+
+    @Test
+    public void testRegraMeioDiaSaidaAte12NaoContaDiariaExtra() {
+        Aluguel aluguel = new Aluguel();
+        aluguel.setQuarto(new QuartoIndividual(100.0, false, false, 1));
+        aluguel.setDataEntrada(LocalDateTime.of(2026, 1, 10, 13, 0));
+        aluguel.setDataSaida(LocalDateTime.of(2026, 1, 11, 12, 0));
+        aluguel.setNumeroHospedes(1);
+
+        assertEquals(1, aluguel.calcularDiarias(),
+                "Saída até 12:00 não deve adicionar diária extra");
     }
 }

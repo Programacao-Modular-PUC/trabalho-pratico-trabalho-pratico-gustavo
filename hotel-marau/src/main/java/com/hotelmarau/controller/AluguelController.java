@@ -1,16 +1,28 @@
 package com.hotelmarau.controller;
 
-import com.hotelmarau.dto.AluguelDTO;
-import com.hotelmarau.exception.*;
-import com.hotelmarau.model.Aluguel;
-import com.hotelmarau.service.AluguelService;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.hotelmarau.dto.AluguelDTO;
+import com.hotelmarau.exception.CapacidadeExcedidaException;
+import com.hotelmarau.exception.DataInvalidaException;
+import com.hotelmarau.exception.QuartoIndisponivelException;
+import com.hotelmarau.exception.RecursoNaoPermitidoException;
+import com.hotelmarau.model.Aluguel;
+import com.hotelmarau.service.AluguelService;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/alugueis")
@@ -36,20 +48,10 @@ public class AluguelController {
     }
 
     @PostMapping
-    public ResponseEntity<?> criar(@Valid @RequestBody AluguelDTO dto) {
-        try {
-            return ResponseEntity.status(HttpStatus.CREATED).body(aluguelService.criar(dto));
-        } catch (DataInvalidaException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro de data: " + e.getMessage());
-        } catch (QuartoIndisponivelException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Quarto indisponível: " + e.getMessage());
-        } catch (CapacidadeExcedidaException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Capacidade excedida: " + e.getMessage());
-        } catch (RecursoNaoPermitidoException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Recurso não permitido: " + e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao criar aluguel: " + e.getMessage());
-        }
+    public ResponseEntity<Aluguel> criar(@Valid @RequestBody AluguelDTO dto)
+            throws DataInvalidaException, QuartoIndisponivelException,
+            CapacidadeExcedidaException, RecursoNaoPermitidoException {
+        return ResponseEntity.status(HttpStatus.CREATED).body(aluguelService.criar(dto));
     }
 
     @PatchMapping("/{id}/cancelar")

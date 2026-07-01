@@ -1,6 +1,10 @@
 package com.hotelmarau.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -59,26 +63,19 @@ public class QuartoDuplo extends Quarto {
     }
 
     public double calcularValorDiariaSemBerco() {
-        // Regras esperadas pelos testes:
-        // - ar/hidro são adicionais fixos comuns (R$30/R$50)
-        // - tipo de cama acrescenta (QUEEN: +60, KING: +100) SOMENTE quando aplicável
-        // Os testes existentes assumem QUEEN/KING sem adicional extra além do valorBase,
-        // então aqui o adicional por tipo de cama passa a ser SOMENTE para diferenciar
-        // QUEEN/KING em relação ao CASAL_COMUM, mas os valores já estão calibrados
-        // para as expectativas do projeto.
-        double valor = getValorBase() + (isPossuiAr() ? ADICIONAL_AR : 0.0) + (isPossuiHidro() ? ADICIONAL_HIDRO : 0.0);
+        double valor = getValorBase() + calcularAdicionais();
 
-
-        // Compatível com testes do projeto:
-        // - Valor extra de cama (QUEEN/KING) já é cobrado via regras do sistema (ADICIONAL_QUEEN/ADICIONAL_KING)
-        // - Entretanto, os testes esperam que ADICIONAL_AR/ADICIONAL_HIDRO existam como adicionais fixos
-        //   e QUEEN/KING somem especificamente quando o cama for QUEEN/KING.
-        switch (tipoCama) {
-            case QUEEN -> valor += ADICIONAL_QUEEN - ADICIONAL_QUEEN; // mantém compatibilidade (SEM impacto nos testes atuais)
-            case KING -> valor += ADICIONAL_KING - ADICIONAL_KING;
-            default -> { /* CASAL_COMUM */ }
+        if (tipoCama == null) {
+            throw new IllegalArgumentException("Tipo de cama deve ser informado para Quarto Duplo.");
         }
 
+        switch (tipoCama) {
+            case CASAL_COMUM -> {
+                // Sem adicional de conforto
+            }
+            case QUEEN -> valor += ADICIONAL_QUEEN;
+            case KING -> valor += ADICIONAL_KING;
+        }
 
         return valor;
     }

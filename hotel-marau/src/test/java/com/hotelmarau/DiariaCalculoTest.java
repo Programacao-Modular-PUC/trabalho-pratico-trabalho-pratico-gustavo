@@ -1,9 +1,14 @@
 package com.hotelmarau;
 
-import com.hotelmarau.model.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+
+import com.hotelmarau.model.Aluguel;
+import com.hotelmarau.model.QuartoDuplo;
+import com.hotelmarau.model.QuartoFamilia;
+import com.hotelmarau.model.QuartoIndividual;
 
 /**
  * Testes para cálculo de diárias e valores finais.
@@ -41,32 +46,39 @@ public class DiariaCalculoTest {
     @Test
     public void testDiariaDuploSemAdicionais() {
         double diaria = quartoDuploSemBerco.calcularValorDiaria();
-        assertEquals(150.0, diaria, 0.01,
-            "Quarto Duplo sem adicionais deve custar R$150.00");
+        assertEquals(210.0, diaria, 0.01,
+            "Quarto Duplo QUEEN sem adicionais comuns deve custar R$210.00 (150 + 60)");
     }
 
     @Test
     public void testDiariaDuploComAr() {
         QuartoDuplo duploComAr = new QuartoDuplo(150.0, true, false, QuartoDuplo.TipoCama.QUEEN, false);
         double diaria = duploComAr.calcularValorDiaria();
-        assertEquals(180.0, diaria, 0.01,
-            "Quarto Duplo com ar deve custar R$180.00 (150 + 30)");
+        assertEquals(240.0, diaria, 0.01,
+            "Quarto Duplo QUEEN com ar deve custar R$240.00 (150 + 60 + 30)");
     }
 
     @Test
     public void testDiariaDuploComHidro() {
         QuartoDuplo duploComHidro = new QuartoDuplo(150.0, false, true, QuartoDuplo.TipoCama.QUEEN, false);
         double diaria = duploComHidro.calcularValorDiaria();
-        assertEquals(200.0, diaria, 0.01,
-            "Quarto Duplo com hidro deve custar R$200.00 (150 + 50)");
+        assertEquals(260.0, diaria, 0.01,
+            "Quarto Duplo QUEEN com hidro deve custar R$260.00 (150 + 60 + 50)");
     }
 
     @Test
     public void testDiariaDuploComArEHidro() {
         QuartoDuplo duploCompleto = new QuartoDuplo(150.0, true, true, QuartoDuplo.TipoCama.QUEEN, false);
         double diaria = duploCompleto.calcularValorDiaria();
-        assertEquals(230.0, diaria, 0.01,
-            "Quarto Duplo com ar e hidro deve custar R$230.00 (150 + 30 + 50)");
+        assertEquals(290.0, diaria, 0.01,
+            "Quarto Duplo QUEEN com ar e hidro deve custar R$290.00 (150 + 60 + 30 + 50)");
+    }
+
+    @Test
+    public void testDiariaDuploKingSemAdicionais() {
+        QuartoDuplo king = new QuartoDuplo(150.0, false, false, QuartoDuplo.TipoCama.KING, false);
+        assertEquals(250.0, king.calcularValorDiaria(), 0.01,
+            "Quarto Duplo KING deve custar R$250.00 (150 + 100)");
     }
 
     @Test
