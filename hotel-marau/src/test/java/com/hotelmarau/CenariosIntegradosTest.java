@@ -186,11 +186,10 @@ public class CenariosIntegradosTest {
         String recibo = aluguel.gerarRecibo();
         
         assertNotNull(recibo);
-        assertTrue(recibo.contains("RECIBO"));
-        assertTrue(recibo.contains("Data e horário de entrada"));
-        assertTrue(recibo.contains("Data e horário de saída"));
-        assertTrue(recibo.contains("Número de diárias"));
-        assertTrue(recibo.contains("Total a pagar"));
+        assertTrue(recibo.contains("Data e horário de entrada:"));
+        assertTrue(recibo.contains("Data e horário de saída:"));
+        assertTrue(recibo.contains("Número de diárias:"));
+        assertTrue(recibo.contains("Total à pagar:"));
         assertTrue(recibo.contains("R$"));
         assertTrue(recibo.length() > 0);
     }

@@ -1,7 +1,6 @@
 package com.hotelmarau;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -94,25 +93,25 @@ public class DiariaCalculoTest {
 
     @Test
     public void testValorFamiliaComDescontoGrupo() {
-        // 6+ hóspedes = 10% de desconto
-        double valorSemDesconto = quartoFamilia.calcularValorTotal(1, 6);
-        double valorComDesconto = valorSemDesconto * 0.9; // 10% desconto
-        
-        // Cálculo: 200 * (1 + 0.30) * 0.9 = 234.0
-        assertTrue(valorSemDesconto > 0,
-            "Valor da família com 6 hóspedes deve ter desconto aplicado");
+        // Cálculo exato: 200 * (1 + 0.30) = 260; desconto de 10% => 234
+        double valorTotal = quartoFamilia.calcularValorTotal(1, 6);
+        assertEquals(234.0, valorTotal, 0.01,
+            "Quarto Família com 6 hóspedes deve custar R$234.00 em 1 diária");
     }
 
     @Test
     public void testValorTotalAluguelIntegrado() {
         Aluguel aluguel = new Aluguel();
         aluguel.setQuarto(quartoDuploSemBerco);
+        aluguel.setDataEntrada(java.time.LocalDateTime.of(2026, 1, 10, 12, 0));
+        aluguel.setDataSaida(java.time.LocalDateTime.of(2026, 1, 12, 12, 0));
         aluguel.setNumeroHospedes(2);
         aluguel.setBercoSolicitado(false);
         
         double valorFinal = aluguel.calcularValorFinal();
-        // valorFinal pode ser zero caso quantidadeDiarias seja calculada como 0 (dependendo de dataEntrada/dataSaida)
-        assertTrue(valorFinal >= 0, "Valor final deve ser zero ou positivo");
+        // 2 diárias * R$210.00 (Duplo QUEEN sem berço)
+        assertEquals(420.0, valorFinal, 0.01,
+            "Valor final deve ser R$420.00 para 2 diárias no quarto duplo QUEEN");
         assertEquals(aluguel.getValorFinal(), valorFinal, 0.01);
 
     }
